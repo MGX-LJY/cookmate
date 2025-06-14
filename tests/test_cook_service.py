@@ -5,7 +5,6 @@
 2. 库存不足时抛 InsufficientInventoryError；
 3. 不存在的菜谱抛 ValueError；
 4. servings 参数非法抛 ValueError。
-
 """
 from __future__ import annotations
 
