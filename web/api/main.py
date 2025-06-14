@@ -11,6 +11,7 @@ except Exception:  # pragma: no cover - allow import without FastAPI
 from infra.logging import setup
 from web.api.routers.recipe import router as recipe_router
 from web.api.routers.inventory import router as inventory_router
+from web.api.routers.planner import router as planner_router
 
 
 def create_app() -> "FastAPI":  # type: ignore[return-type]
@@ -29,6 +30,8 @@ def create_app() -> "FastAPI":  # type: ignore[return-type]
         app.include_router(recipe_router)
     if inventory_router is not None:  # pragma: no cover - skip if FastAPI missing
         app.include_router(inventory_router)
+    if planner_router is not None:  # pragma: no cover - skip if FastAPI missing
+        app.include_router(planner_router)
 
     return app
 
