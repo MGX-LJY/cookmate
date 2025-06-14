@@ -46,7 +46,7 @@ cookmate/
 │   └── logging.py                   ✅
 ├── web/
 │   ├── api/
-│   │   ├── main.py                  ⬜
+│   │   ├── main.py                  ✅
 │   │   └── routers/                 ⬜
 │   └── frontend/
 │       ├── index.html               ⬜
@@ -64,7 +64,7 @@ cookmate/
 
 | # | 文件/目录 | 为什么先写 | 完成标志 |
 |---|-----------|-----------|---------|
-| 1 | `web/api/main.py`, `deps.py` | 框架入口，提供统一依赖 | ⬜ |
+| 1 | `web/api/main.py`, `deps.py` | 框架入口，提供统一依赖 | ✅ |
 | 2 | `web/api/routers/recipe.py` | 暴露菜谱相关 API | ⬜ |
 | 3 | `web/api/routers/inventory.py` | 库存管理 API | ⬜ |
 | 4 | `web/api/routers/planner.py` | 智能筛选 & 购物清单 | ⬜ |

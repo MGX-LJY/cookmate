@@ -17,5 +17,6 @@ packages = { find = { where = ["."], include = [
     "app", "app.*",
     "adapters", "adapters.*",
     "domain", "domain.*",
-    "infra", "infra.*"
+    "infra", "infra.*",
+    "web", "web.*"
 ] } }
