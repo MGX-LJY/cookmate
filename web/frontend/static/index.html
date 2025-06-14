@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <title>Cookmate Demo</title>
+</head>
+<body>
+    <h1>Cookmate 前端 Demo</h1>
+    <button id="ping">Ping API</button>
+    <pre id="output"></pre>
+    <script>
+    document.getElementById('ping').addEventListener('click', async () => {
+        const resp = await fetch('/ping');
+        const data = await resp.json();
+        document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+    });
+    </script>
+</body>
+</html>
