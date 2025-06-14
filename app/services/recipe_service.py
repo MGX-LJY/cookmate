@@ -113,3 +113,11 @@ class RecipeService:  # noqa: WPS110
         """列出所有菜谱。"""
         with self.uow as uow:
             return list(uow.recipes.list())
+
+    def remove_recipe(self, name: str) -> None:  # noqa: D401
+        """按菜名删除菜谱。"""
+        with self.uow as uow:
+            recipe = uow.recipes.find_by_name(name)
+            if not recipe:
+                raise RecipeNotFoundError(name)
+            uow.recipes.remove(recipe.id)
