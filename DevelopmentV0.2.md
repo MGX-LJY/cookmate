@@ -1,6 +1,6 @@
-# Development Guide
+# Development Guide (v0.2)
 
-> **目标**：明确 *Cookmate* MVP (CLI + SQLite) 阶段 **每个文件/模块** 的功能与边界，方便团队协作与后续迭代。
+> **目标**：明确 *Cookmate* v0.2 (FastAPI + 前端 Demo) 阶段 **每个文件/模块** 的功能与边界，方便团队协作与后续迭代。
 >
 > **状态标识** | ✅ 完成并通过测试 | ⬜ 尚未实现 / 未通过
 
@@ -44,10 +44,21 @@ cookmate/
 ├── infra/
 │   ├── event_bus.py                 ✅
 │   └── logging.py                   ✅
+├── web/
+│   ├── api/
+│   │   ├── main.py                  ✅
+│   │   ├── deps.py                  ✅
+│   │   └── routers/
+│   │       ├── recipe.py            ✅
+│   │       ├── inventory.py         ✅
+│   │       └── planner.py           ✅
+│   └── frontend/
+│       ├── index.html               ⬜
+│       └── static/                  ⬜
 └── tests/
     ├── test_recipe_service.py       ✅
     ├── test_cook_service.py         ✅
-    ├── test_planner_service.py      ⬜
+    ├── test_planner_service.py      ✅
     └── conftest.py                  ✅
 ```
 
@@ -57,19 +68,15 @@ cookmate/
 
 | # | 文件/目录 | 为什么先写 | 完成标志 |
 |---|-----------|-----------|---------|
-| 1 | `domain/shared/value_objects.py`, `events.py` | 稳定基石，无外部依赖 | **✅ 已实现 & 通过测试** |
-| 2 | `domain/ingredient/models.py` | 简单聚合，不依赖其他聚合 | **✅** |
-| 3 | `domain/recipe/models.py` | 核心聚合依赖 Ingredient | **✅** |
-| 4 | `domain/inventory/models.py` | 与 Cook 强关联 | **✅** |
-| 5 | `domain/**/repository.py` | 定义 Port 先行 | **✅** |
-| 6 | `adapters/repo_memory/*` | 支持 TDD，脱离 DB | **✅** |
-| 7 | `app/unit_of_work.py` | 事务边界 | **✅** |
-| 8 | `app/services/*.py` | 业务价值最大 | **✅** |
-| 9 | `tests/*` (当前仅 Recipe) | 驱动设计收敛 | **✅ test_recipe_service 通过** |
-|10 | `adapters/repo_sqlite/*`, `infra/event_bus.py`, `infra/logging.py` | 持久化 & 基础设施 | **✅** |
-|11 | `adapters/cli/main.py` | 完整用户链路 | **✅** |
+| 1 | `web/api/main.py`, `deps.py` | 框架入口，提供统一依赖 | ✅ |
+| 2 | `web/api/routers/recipe.py` | 暴露菜谱相关 API | ✅ |
+| 3 | `web/api/routers/inventory.py` | 库存管理 API | ✅ |
+| 4 | `web/api/routers/planner.py` | 智能筛选 & 购物清单 | ✅ |
+| 5 | `tests/test_api_endpoints.py` | 覆盖所有路由 | ✅ |
+| 6 | `web/frontend/` | 简易前端 Demo | ⬜ |
+| 7 | 文档与部署脚本 | 发布准备 | ⬜ |
 
-> **下一步优先级**：完善 CLI 功能并补充 `tests/test_planner_service.py`。
+> **下一步优先级**：启动 v0.2 开发，搭建 FastAPI 服务与前端 Demo。
 
 ---
 
@@ -77,8 +84,10 @@ cookmate/
 
 | 里程碑 | 需完成文件 | 当前进度 |
 |--------|-----------|---------|
-| **M1 Domain+Memory** | `domain/**`, `adapters/repo_memory/**`, `app/services/**`, `tests/test_recipe_service.py`, `app/unit_of_work.py` | **✅ 已全部通过 pytest** |
-| **M2 SQLite+CLI** | `adapters/repo_sqlite/**`, `infra/**`, `tests/test_cook_service.py`, `tests/test_planner_service.py`, `adapters/cli/main.py` | ▶️ 进行中 |
+| **M1 Domain+Memory** | `domain/**`, `adapters/repo_memory/**`, `app/services/**`, `tests/test_recipe_service.py`, `app/unit_of_work.py` | ✅ 完成 |
+| **M2 SQLite+CLI** | `adapters/repo_sqlite/**`, `infra/**`, `tests/test_cook_service.py`, `tests/test_planner_service.py`, `adapters/cli/main.py` | ✅ 完成 |
+| **M3 API 基础** | `web/api/**`, `tests/test_api_endpoints.py` | ✅ 完成 |
+| **M4 前端 Demo** | `web/frontend/**` | ⬜ |
 
 ---
 
@@ -86,9 +95,9 @@ cookmate/
 
 | 日程 | 目标 |
 |------|------|
-| **Day 1** | SQLite ORM & `db.py` 模板；完成三个 SQLite Repo；补充 EventBus、Logging。 |
-| **Day 2** | `CookService` / `PlannerService` 集成测试 (SQLite 后端)；修复兼容性问题。 |
-| **Day 3** | 完成 Typer CLI；编写 End‑to‑End 测试脚本；打标签 *v0.1.0*。 |
+| **Day 1** | 搭建 FastAPI 应用框架，提供基本依赖。 |
+| **Day 2** | 完成核心业务路由（Recipe/Inventory/Planner），编写 API 测试。 |
+| **Day 3** | 交付前端 Demo，确保与 API 联调通过，打标签 *v0.2.0*。 |
 
 ---
 
