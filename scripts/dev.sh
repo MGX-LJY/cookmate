@@ -2,6 +2,12 @@
 # Start API and frontend for development
 set -e
 
+# Locate project root (one directory above this script)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="$(dirname "$SCRIPT_DIR")"
+export PYTHONPATH="$ROOT_DIR:$PYTHONPATH"
+cd "$ROOT_DIR"
+
 python -m uvicorn web.api.main:app --reload &
 API_PID=$!
 
