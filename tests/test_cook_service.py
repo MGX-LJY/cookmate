@@ -5,6 +5,7 @@
 2. 库存不足时抛 InsufficientInventoryError；
 3. 不存在的菜谱抛 ValueError；
 4. servings 参数非法抛 ValueError。
+
 """
 from __future__ import annotations
 
@@ -70,3 +71,4 @@ def test_cook_invalid_servings(uow, event_bus):
     svc = CookService(uow, event_bus)
     with pytest.raises(ValueError):
         svc.cook(recipe_id, servings=0)
+=======

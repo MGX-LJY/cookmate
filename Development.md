@@ -42,11 +42,11 @@ cookmate/
 │   └── cli/
 │       └── main.py                  ⬜
 ├── infra/
-│   ├── event_bus.py                 ⬜
+│   ├── event_bus.py                 ✅
 │   └── logging.py                   ⬜
 └── tests/
     ├── test_recipe_service.py       ✅
-    ├── test_cook_service.py         ⬜
+    ├── test_cook_service.py         ✅
     ├── test_planner_service.py      ⬜
     └── conftest.py                  ✅
 ```
@@ -65,7 +65,7 @@ cookmate/
 | 6 | `adapters/repo_memory/*` | 支持 TDD，脱离 DB | **✅** |
 | 7 | `app/unit_of_work.py` | 事务边界 | **✅** |
 | 8 | `app/services/*.py` | 业务价值最大 | **✅** |
-| 9 | `tests/*` (当前仅 Recipe) | 驱动设计收敛 | **✅ test_recipe_service 通过** |
+| 9 | `tests/*` (当前仅 Recipe) | 驱动设计收敛 | **✅ test_recipe_service test_cook_service通过** |
 |10 | `adapters/repo_sqlite/*`, `infra/event_bus.py`, `infra/logging.py` | 持久化 & 基础设施 | ⬜ **待实现** |
 |11 | `adapters/cli/main.py` | 完整用户链路 | ⬜ **待实现** |
 
