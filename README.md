@@ -1,4 +1,4 @@
-# Cookmate 🍳
+# Cookmate 🍳
 
 *个人菜谱 & 冰箱库存管理器 — 录菜、管料、选菜、买菜，一条龙完成*
 
@@ -7,8 +7,7 @@
 ![license](https://img.shields.io/badge/license-MIT-green)
 ![ci](https://github.com/yourname/cookmate/actions/workflows/ci.yml/badge.svg)
 
-> **写 README 在写代码之前。**
->
+> **写 README 在写代码之前。**  
 > “README 是项目的北极星，为开发与用户指明方向。” – *改写自 Tom Preston‑Werner*
 
 ---
