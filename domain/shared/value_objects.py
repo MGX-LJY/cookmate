@@ -136,6 +136,25 @@ class Quantity:  # noqa: WPS110 (允许类名直白表达领域概念)
             raise ValueError("结果数量为负数，不合理")
         return Quantity(result, self.unit)
 
+    # 与数字相乘 / 除
+    def __mul__(self, factor: "int | float | Decimal") -> "Quantity":  # noqa: WPS110
+        try:
+            fac = Decimal(str(factor))
+        except InvalidOperation as exc:  # noqa: WPS110
+            raise TypeError("Quantity 只能与数值相乘") from exc
+        return Quantity(self.amount * fac, self.unit)
+
+    __rmul__ = __mul__
+
+    def __truediv__(self, divisor: "int | float | Decimal") -> "Quantity":  # noqa: WPS110
+        try:
+            div = Decimal(str(divisor))
+        except InvalidOperation as exc:  # noqa: WPS110
+            raise TypeError("Quantity 只能除以数值") from exc
+        if div == 0:
+            raise ZeroDivisionError
+        return Quantity(self.amount / div, self.unit)
+
     # ---------------------------------------------------------------------
     # 比较运算（基于量值统一单位后比较）
     # ---------------------------------------------------------------------
