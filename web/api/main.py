@@ -9,6 +9,7 @@ except Exception:  # pragma: no cover - allow import without FastAPI
     FastAPI = None  # type: ignore
 
 from infra.logging import setup
+from web.api.routers.recipe import router as recipe_router
 
 
 def create_app() -> "FastAPI":  # type: ignore[return-type]
@@ -23,7 +24,9 @@ def create_app() -> "FastAPI":  # type: ignore[return-type]
     async def ping() -> dict[str, str]:
         return {"msg": "pong"}
 
-    # Routers will be included in later milestones
+    if recipe_router is not None:  # pragma: no cover - skip if FastAPI missing
+        app.include_router(recipe_router)
+
     return app
 
 
