@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import uuid
 from typing import Mapping
+from enum import Enum
 
 try:
     from fastapi import APIRouter, Depends, HTTPException
@@ -67,7 +68,7 @@ if APIRouter is not None:  # pragma: no cover - skip when FastAPI unavailable
                     ShoppingItem(
                         ingredient=name,
                         amount=float(qty.amount),
-                        unit=qty.unit.value,
+                        unit=qty.unit.value if isinstance(qty.unit, Enum) else str(qty.unit),
                     )
                 )
         return items
