@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import datetime as _dt
 from dataclasses import dataclass, field
+from decimal import Decimal
 from typing import Final, Mapping
 
 from domain.shared.value_objects import IngredientId, Quantity
