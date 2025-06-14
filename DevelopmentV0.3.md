@@ -24,10 +24,11 @@ cookmate/
 
 | # | 文件/目录 | 说明 | 完成标志 |
 |---|-----------|------|---------|
-| 1 | `web/frontend/static/index.html` | 实现基本导航和交互布局 | ✅ |
+| 1 | `web/frontend/static/index.html` | 优雅导航栏+示例菜谱表格 | ✅ |
 | 2 | `web/frontend/main.py` | 暴露静态资源，更新版本号 | ✅ |
-| 3 | `README.md` | 路线图标记 v0.3 完成 | ✅ |
-| 4 | `pyproject.toml` | 升级版本到 0.3.0 | ✅ |
+| 3 | `web/api/routers/recipe.py` | 新增删除接口 | ✅ |
+| 4 | `README.md` | 更新路线图与示例菜谱 | ✅ |
+| 5 | `pyproject.toml` | 升级版本到 0.3.1 | ✅ |
 
 > **下一步优先级**：在 v0.4 中为 UI 增加动画效果与过渡。
 

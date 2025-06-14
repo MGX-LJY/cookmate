@@ -16,7 +16,7 @@ def create_app() -> "FastAPI":  # type: ignore[return-type]
     if FastAPI is None or StaticFiles is None:  # pragma: no cover - import guard
         raise RuntimeError("FastAPI is not installed")
 
-    app = FastAPI(title="Cookmate Frontend", version="0.3.0")
+    app = FastAPI(title="Cookmate Frontend", version="0.3.1")
     static_dir = Path(__file__).parent / "static"
     app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
     return app

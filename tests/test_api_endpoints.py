@@ -1,4 +1,3 @@
-import uuid
 import pytest
 try:
     from fastapi.testclient import TestClient
@@ -58,11 +57,15 @@ def test_recipe_endpoints(client):
     }
     resp = client.post("/recipes/", json=data)
     assert resp.status_code == 201
-    rid = uuid.UUID(resp.json()["id"])
 
     resp = client.get("/recipes/")
     assert resp.status_code == 200
     assert resp.json() == ["番茄炒蛋"]
+
+    resp = client.delete("/recipes/番茄炒蛋")
+    assert resp.status_code == 204
+    resp = client.get("/recipes/")
+    assert resp.json() == []
 
 
 def test_inventory_endpoints(client):
@@ -78,6 +81,12 @@ def test_inventory_endpoints(client):
     resp = client.get("/inventory/")
     amounts = {item["ingredient"]: item["amount"] for item in resp.json()}
     assert amounts["鸡蛋"] == 10.0
+
+    resp = client.delete("/inventory/鸡蛋")
+    assert resp.status_code == 204
+    resp = client.get("/inventory/")
+    names = [item["ingredient"] for item in resp.json()]
+    assert "鸡蛋" not in names
 
 
 def test_planner_endpoints(client):
