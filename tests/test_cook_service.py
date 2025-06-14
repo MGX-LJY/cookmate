@@ -71,4 +71,3 @@ def test_cook_invalid_servings(uow, event_bus):
     svc = CookService(uow, event_bus)
     with pytest.raises(ValueError):
         svc.cook(recipe_id, servings=0)
-=======
