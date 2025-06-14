@@ -46,7 +46,7 @@ cookmate/
 │   └── logging.py                   ⬜
 └── tests/
     ├── test_recipe_service.py       ✅
-    ├── test_cook_service.py         ⬜
+    ├── test_cook_service.py         ✅
     ├── test_planner_service.py      ⬜
     └── conftest.py                  ✅
 ```

@@ -136,6 +136,8 @@ class Quantity:  # noqa: WPS110 (允许类名直白表达领域概念)
             raise ValueError("结果数量为负数，不合理")
         return Quantity(result, self.unit)
 
+=======
+    # 与数字相乘 / 除
     def __mul__(self, factor: "int | float | Decimal") -> "Quantity":  # noqa: WPS110
         try:
             fac = Decimal(str(factor))
