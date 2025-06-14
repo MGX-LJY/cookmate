@@ -5,7 +5,6 @@
 ![status](https://img.shields.io/badge/status-pre--alpha-red)
 ![python](https://img.shields.io/badge/python-3.9%2B-blue)
 ![license](https://img.shields.io/badge/license-MIT-green)
-![ci](https://github.com/yourname/cookmate/actions/workflows/ci.yml/badge.svg)
 
 > **写 README 在写代码之前。**  
 > “README 是项目的北极星，为开发与用户指明方向。” – *改写自 Tom Preston‑Werner*
