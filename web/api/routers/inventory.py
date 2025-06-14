@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import date
 
 try:
-    from fastapi import APIRouter, Depends, HTTPException
+    from fastapi import APIRouter, Depends, HTTPException, Response
     from pydantic import BaseModel
 except Exception:  # pragma: no cover - allow import without FastAPI/Pydantic
     APIRouter = None  # type: ignore
@@ -90,17 +90,18 @@ if APIRouter is not None:  # pragma: no cover - skip when FastAPI unavailable
             )
         return {"ingredient_id": str(ing.id)}
 
-    @router.delete("/{ingredient}", status_code=204)
+    @router.delete("/{ingredient}", status_code=204, response_class=Response)
     def remove_inventory(
         ingredient: str,
         uow: AbstractUnitOfWork = Depends(get_uow),
-    ) -> None:
+    ) -> Response:
         """Remove an inventory item by ingredient name."""
         with uow as tx:
             ing = tx.ingredients.find_by_name(ingredient)
             if not ing:
                 raise HTTPException(status_code=404, detail="Ingredient not found")
             tx.inventories.remove(ing.id)
+        return Response(status_code=204)
 else:  # pragma: no cover - placeholder
     router = None
 
