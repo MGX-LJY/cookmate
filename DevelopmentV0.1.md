@@ -1,4 +1,4 @@
-# Development Guide
+# Development Guide (v0.1)
 
 > **目标**：明确 *Cookmate* MVP (CLI + SQLite) 阶段 **每个文件/模块** 的功能与边界，方便团队协作与后续迭代。
 >
