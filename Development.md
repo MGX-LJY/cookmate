@@ -47,7 +47,7 @@ cookmate/
 └── tests/
     ├── test_recipe_service.py       ✅
     ├── test_cook_service.py         ✅
-    ├── test_planner_service.py      ⬜
+    ├── test_planner_service.py      ✅
     └── conftest.py                  ✅
 ```
 
@@ -69,7 +69,7 @@ cookmate/
 |10 | `adapters/repo_sqlite/*`, `infra/event_bus.py`, `infra/logging.py` | 持久化 & 基础设施 | **✅** |
 |11 | `adapters/cli/main.py` | 完整用户链路 | **✅** |
 
-> **下一步优先级**：完善 CLI 功能并补充 `tests/test_planner_service.py`。
+> **下一步优先级**：启动 v0.2 开发，搭建 FastAPI 服务与前端 Demo。
 
 ---
 
@@ -78,7 +78,7 @@ cookmate/
 | 里程碑 | 需完成文件 | 当前进度 |
 |--------|-----------|---------|
 | **M1 Domain+Memory** | `domain/**`, `adapters/repo_memory/**`, `app/services/**`, `tests/test_recipe_service.py`, `app/unit_of_work.py` | **✅ 已全部通过 pytest** |
-| **M2 SQLite+CLI** | `adapters/repo_sqlite/**`, `infra/**`, `tests/test_cook_service.py`, `tests/test_planner_service.py`, `adapters/cli/main.py` | ▶️ 进行中 |
+| **M2 SQLite+CLI** | `adapters/repo_sqlite/**`, `infra/**`, `tests/test_cook_service.py`, `tests/test_planner_service.py`, `adapters/cli/main.py` | ✅ 已完成 |
 
 ---
 
