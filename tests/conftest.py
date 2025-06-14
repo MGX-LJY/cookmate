@@ -13,7 +13,7 @@ from app.unit_of_work import MemoryUnitOfWork
 from domain.inventory.models import InventoryItem
 from domain.ingredient.models import Ingredient
 from domain.shared.value_objects import Quantity, Unit
-from app.services.cook_service import EventBus
+from infra.event_bus import EventBus
 
 ###############################################################################
 # 简易事件总线 (收集事件用)
