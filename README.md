@@ -56,7 +56,7 @@ $ pip install -e .
 $ pip install -e .[dev]
 
 # 4. 运行单元测试
-$ pytest -q
+$ PYTHONPATH=$PWD pytest -q
 ```
 
 ### CLI 体验
