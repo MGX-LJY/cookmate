@@ -1,5 +1,5 @@
 from domain.shared.value_objects import Difficulty, Quantity
-from domain.recipe.model import Recipe, RecipeIngredient
+from domain.recipe.models import Recipe, RecipeIngredient
 
 def test_recipe_create_and_update_notes():
     r = Recipe(

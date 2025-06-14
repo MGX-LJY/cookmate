@@ -8,7 +8,7 @@ from __future__ import annotations
 from collections import OrderedDict
 from typing import Iterable
 
-from domain.recipe.model import Recipe
+from domain.recipe.models import Recipe
 from domain.recipe.ports import RecipeRepository
 
 

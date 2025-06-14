@@ -1,7 +1,7 @@
 from adapters.repo_memory.recipe_repo import InMemoryRecipeRepository
 from app.recipe_service import RecipeService
-from domain.recipe.model import Recipe
-from domain.recipe.model import RecipeIngredient
+from domain.recipe.models import Recipe
+from domain.recipe.models import RecipeIngredient
 from domain.shared.value_objects import Difficulty, Quantity
 
 
