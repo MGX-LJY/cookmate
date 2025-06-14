@@ -20,7 +20,7 @@
 """
 from __future__ import annotations
 
-from typing import Mapping, Protocol
+from typing import Mapping
 
 from app.unit_of_work import AbstractUnitOfWork
 from domain.inventory.models import InventoryItem
@@ -29,23 +29,12 @@ from domain.recipe.models import Recipe
 from domain.recipe.repository import AbstractRecipeRepo
 from domain.shared.events import RecipeCooked
 from domain.shared.value_objects import IngredientId, Quantity, RecipeId
+from infra.event_bus import EventBus, NullEventBus
 
 ###############################################################################
 # 辅助接口
 ###############################################################################
 
-class EventBus(Protocol):  # noqa: WPS110
-    """最小事件总线协议。"""
-
-    def publish(self, event: RecipeCooked) -> None:  # noqa: D401
-        ...
-
-
-class NullEventBus:  # noqa: WPS110
-    """默认空事件总线，做 no-op。"""
-
-    def publish(self, event):  # noqa: D401, ANN001
-        return None
 
 ###############################################################################
 # 自定义异常

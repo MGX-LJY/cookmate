@@ -40,13 +40,13 @@ cookmate/
 │   │   ├── inventory_repo.py        ✅
 │   │   └── ingredient_repo.py       ✅
 │   └── cli/
-│       └── main.py                  ⬜
+│       └── main.py                  ✅
 ├── infra/
-│   ├── event_bus.py                 ⬜
-│   └── logging.py                   ⬜
+│   ├── event_bus.py                 ✅
+│   └── logging.py                   ✅
 └── tests/
     ├── test_recipe_service.py       ✅
-    ├── test_cook_service.py         ⬜
+    ├── test_cook_service.py         ✅
     ├── test_planner_service.py      ⬜
     └── conftest.py                  ✅
 ```
@@ -66,10 +66,14 @@ cookmate/
 | 7 | `app/unit_of_work.py` | 事务边界 | **✅** |
 | 8 | `app/services/*.py` | 业务价值最大 | **✅** |
 | 9 | `tests/*` (当前仅 Recipe) | 驱动设计收敛 | **✅ test_recipe_service 通过** |
-|10 | `adapters/repo_sqlite/*`, `infra/event_bus.py`, `infra/logging.py` | 持久化 & 基础设施 | ⬜ **待实现** |
-|11 | `adapters/cli/main.py` | 完整用户链路 | ⬜ **待实现** |
+|10 | `adapters/repo_sqlite/*`, `infra/event_bus.py`, `infra/logging.py` | 持久化 & 基础设施 | **✅** |
+|11 | `adapters/cli/main.py` | 完整用户链路 | **✅** |
 
-> **下一步优先级**：实现步骤 10（SQLite Repos & EventBus & Logging）→ 步骤 11（Typer CLI）。
+> **下一步优先级**：对照 README *v0.1* 需求补全以下事项：
+> - `RecipeService` 支持 **编辑 & Markdown/CSV 导入**
+> - 新建 `InventoryService` 完成库存录入与保质期管理
+> - 提供 `PlannerService` 相关 CLI（可做菜谱筛选 & 购物清单）
+> - 编写 `tests/test_planner_service.py`
 
 ---
 
@@ -78,7 +82,7 @@ cookmate/
 | 里程碑 | 需完成文件 | 当前进度 |
 |--------|-----------|---------|
 | **M1 Domain+Memory** | `domain/**`, `adapters/repo_memory/**`, `app/services/**`, `tests/test_recipe_service.py`, `app/unit_of_work.py` | **✅ 已全部通过 pytest** |
-| **M2 SQLite+CLI** | `adapters/repo_sqlite/**`, `infra/**`, `tests/test_cook_service.py`, `tests/test_planner_service.py`, `adapters/cli/main.py` | ⬜ 进行中 |
+| **M2 SQLite+CLI** | `adapters/repo_sqlite/**`, `infra/**`, `tests/test_cook_service.py`, `tests/test_planner_service.py`, `adapters/cli/main.py` | ▶️ 进行中 |
 
 ---
 
