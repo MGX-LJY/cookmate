@@ -1,111 +1,168 @@
-下面是一份基于你 **Cookmate** 项目现状的 “从 0 到 可用” 开发思路，分为 4 个阶段、12 个里程碑，并穿插关键技术决策与落地建议。你可以按需拆分为短迭代（1–2 周）来执行。
+# Development Guide
+
+> **目标**：明确 *Cookmate* MVP (CLI + SQLite) 阶段**每个文件/模块**的功能与边界，方便团队协作与后续迭代。
 
 ---
 
-## 🌱 阶段 0：澄清目标 & 基础设施
+## 📂 目录结构总览
 
-| 里程碑             | 目的                                 | 产出                                                       |
-| --------------- | ---------------------------------- | -------------------------------------------------------- |
-| **M0-1　MVP 清单** | 把 README 中的功能按“上线必需 / 后续增强”两档再梳理一次 | 两张表：功能 MVP & 待迭代 backlog                                 |
-| **M0-2　开发基础设施** | 搭通最小可用的 CI / 质量门禁                  | `ruff + mypy + pytest` 在 GitHub Actions 通过；pre-commit 钩子 |
-
-> **鸡血一句：** *“先让代码能跑、能测、能查。”* 你会在后面反复受益。
-
----
-
-## 🛠️ 阶段 1：Domain & 内存实现（无 I/O）
-
-> 目标：**可在 Python REPL 中录菜 → 扣库存 → 生成购物清单**，完全不触磁盘。
-
-| 里程碑                       | 关键任务                                                                                    | 建议库 / 方法                                     |
-| ------------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------- |
-| **M1-1　领域模型**             | `Recipe`, `Ingredient`, `InventoryItem` 聚合根<br>值对象：`Quantity`, `Unit`, `ExpirationDate` | 纯 Python dataclass / Pydantic v2 `BaseModel` |
-| **M1-2　领域服务**             | `CookService`（校验 & 扣减）<br>`PlannerService`（按已有食材筛选可做菜）                                  | 函数式 + 小型策略模式                                 |
-| **M1-3　Memory Repo + DI** | 写 `repo_memory`，注入到服务层                                                                  | `typing.Protocol` 先定义 Port                   |
-| **M1-4　单元测试**             | 覆盖服务 & repo 分支                                                                          | pytest parametrize + hypothesis              |
-
-**完成标志**： 在 `tests/` 里模拟做两道菜，能看到库存扣减与缺料列表生成。
-
----
-
-## 🗂️ 阶段 2：持久化 & 适配层
-
-> 目标：**CLI→SQLite** 全流程打通；为后续 Web/前端留好缝隙。
-
-| 里程碑                  | 关键任务                                                       | 建议库 / 方法                             |
-| -------------------- | ---------------------------------------------------------- | ------------------------------------ |
-| **M2-1　SQLite Repo** | 用 SQLAlchemy 2.0 ORM；表设计保持与 Domain 一致                      | `SQLModel` 可减少样板；事务用 context manager |
-| **M2-2　CLI 原型**      | Typer（或 Click 8+）实现<br>`cookmate add-recipe / cook / list` | 丰富命令：`--json` 输出供其他工具消费              |
-| **M2-3　事件总线 & 读模型**  | 简易 `EventDispatcher`，先用 Python queue                       | 消费者示例：`CookingLogger`                |
-| **M2-4　集成测试**        | Memory & SQLite 同一个 test suite 运行<br>确保 Port 兼容            | pytest fixtures + `--sqlite` flag    |
-
-**完成标志**： 在终端输入一行 `cookmate cook "番茄炒蛋"`，CLI 自动扣库存并落库。
-
----
-
-## 🌐 阶段 3：API & 前端 Demo
-
-> 目标：**手机/浏览器点一下就能看到剩菜剩料**。
-
-| 里程碑                  | 关键任务                                             | 建议库 / 方法                        |
-| -------------------- | ------------------------------------------------ | ------------------------------- |
-| **M3-1　FastAPI 层**   | `POST /recipes/` `POST /cook/` `GET /inventory/` | Pydantic v2 DTO；依赖注入用 `Depends` |
-| **M3-2　Auth & CORS** | 简单 API-Key 鉴权，支持前端本地调试                           | FastAPI middleware              |
-| **M3-3　前端 Demo**     | Vite + React (或 Svelte)；库存列表 + 缺料提示              | 先静态部署 GitHub Pages              |
-| **M3-4　Docker & 备份** | 多阶段构建：poetry install → slim image<br>DB 差异化备份脚本  | cron + `sqlite3 .dump`          |
-
-**完成标志**： Demo 网页能展示库存 & 一键生成购物清单（JSON/CSV 下载）。
+```text
+cookmate/
+├── domain/
+│   ├── recipe/
+│   │   ├── models.py
+│   │   └── repository.py
+│   ├── ingredient/
+│   │   ├── models.py
+│   │   └── repository.py
+│   ├── inventory/
+│   │   ├── models.py
+│   │   └── repository.py
+│   └── shared/
+│       ├── value_objects.py
+│       └── events.py
+├── app/
+│   ├── services/
+│   │   ├── recipe_service.py
+│   │   ├── cook_service.py
+│   │   └── planner_service.py
+│   └── unit_of_work.py
+├── adapters/
+│   ├── repo_memory/
+│   │   ├── recipe_repo.py
+│   │   ├── inventory_repo.py
+│   │   └── ingredient_repo.py
+│   ├── repo_sqlite/
+│   │   ├── db.py
+│   │   ├── recipe_repo.py
+│   │   ├── inventory_repo.py
+│   │   └── ingredient_repo.py
+│   └── cli/
+│       └── main.py
+├── infra/
+│   ├── event_bus.py
+│   └── logging.py
+└── tests/
+    ├── test_recipe_service.py
+    ├── test_cook_service.py
+    ├── test_planner_service.py
+    └── conftest.py
+```
 
 ---
 
-## 🚀 阶段 4：智能化 & 扩展
+## 📑 文件职责明细
 
-| 里程碑                | 关键任务                                              | 说明                        |
-| ------------------ | ------------------------------------------------- | ------------------------- |
-| **M4-1　扫码/语音录入**   | 条形码：集成外部 API 获取食材信息<br>语音：本地离线 ASR + 简易 NLP 匹配食材名 | 先做条形码；语音可插 Home Assistant |
-| **M4-2　推荐 & 计划优化** | 根据过期风险、营养均衡给出一周菜单                                 | 涉及多目标优化，可用 OR-Tools       |
-| **M4-3　多用户 & 权限**  | 家庭帐号共享同一库存；角色：Owner / Member                      | FastAPI `fastapi-users`   |
-| **M4-4　云同步 / 小程序** | SQLite → PostgreSQL / Supabase<br>小程序 H5 套壳       | 取决于你未来商业化方向               |
+### 1. **domain/** — 纯领域模型层
+
+| 文件                           | 角色   | 主要职责                                                                                        |
+| ---------------------------- | ---- | ------------------------------------------------------------------------------------------- |
+| **recipe/models.py**         | 聚合根  | `Recipe` 数据结构；含 `id`、`name`、`steps`、`ingredients(required_qty)`；封装不变式检查与成本估算等领域方法。          |
+| **recipe/repository.py**     | Port | 定义 `AbstractRecipeRepo` 接口 (`add` / `get` / `list`)；不实现持久化。                                 |
+| **ingredient/models.py**     | 聚合根  | `Ingredient` 定义；包括 `unit`、`nutrition` 元数据；提供单位换算助手。                                         |
+| **ingredient/repository.py** | Port | `AbstractIngredientRepo`。                                                                   |
+| **inventory/models.py**      | 聚合根  | `InventoryItem`：`ingredient_id`、`quantity`、`expires_on`；封装 `is_expired()`、`consume(qty)` 等。 |
+| **inventory/repository.py**  | Port | `AbstractInventoryRepo`。                                                                    |
+| **shared/value\_objects.py** | 值对象  | 不可变对象：`Quantity`、`Unit`、标识符类 (`RecipeId`, `IngredientId`)；实现比较与序列化。                         |
+| **shared/events.py**         | 领域事件 | 事件定义：`RecipeCooked`, `InventoryLow`；事件基类含时间戳、payload。                                       |
+
+### 2. **app/** — 应用服务层
+
+| 文件                               | 角色   | 主要职责                                               |
+| -------------------------------- | ---- | -------------------------------------------------- |
+| **services/recipe\_service.py**  | 应用服务 | 处理新增/编辑菜谱，用 UoW 协调事务；验证重复菜名。                       |
+| **services/cook\_service.py**    | 应用服务 | 核心烹饪流程：校验库存、扣减、发布 `RecipeCooked`，返回缺料报告。           |
+| **services/planner\_service.py** | 应用服务 | 根据库存筛选可做菜；生成购物清单 (按门店分拆)。                          |
+| **unit\_of\_work.py**            | 事务边界 | `UnitOfWork` 抽象 & 具体实现：聚合 Repo、管理 commit/rollback。 |
+
+### 3. **adapters/** — 基础设施适配层
+
+| 路径                                   | 角色             | 主要职责                                                               |
+| ------------------------------------ | -------------- | ------------------------------------------------------------------ |
+| **repo\_memory/**                    | In‑Memory Repo | 为测试/原型实现 CRUD；线程安全。                                                |
+|  └─ **recipe\_repo.py**              | Adapter        | `AbstractRecipeRepo` 的内存实现。                                        |
+|  └─ **inventory\_repo.py**           | Adapter        | `AbstractInventoryRepo` 的内存实现。                                     |
+|  └─ **ingredient\_repo.py**          | Adapter        | `AbstractIngredientRepo` 的内存实现。                                    |
+| **repo\_sqlite/db.py**               | 基建             | 创建 SQLAlchemy 2.0 `engine` & `SessionLocal`；初始化表。                  |
+| **repo\_sqlite/recipe\_repo.py**     | Adapter        | SQLite 持久化实现；包含 ORM 映射。                                            |
+| **repo\_sqlite/inventory\_repo.py**  | Adapter        | 同上，针对 `InventoryItem`。                                             |
+| **repo\_sqlite/ingredient\_repo.py** | Adapter        | 同上，针对 `Ingredient`。                                                |
+| **cli/main.py**                      | 接口适配           | Typer CLI 入口，子命令：`add-recipe`、`cook`、`inventory`、`plan`；解析输入并调度服务。 |
+
+### 4. **infra/** — 通用基础设施
+
+| 文件                | 角色   | 主要职责                    |
+| ----------------- | ---- | ----------------------- |
+| **event\_bus.py** | 事件总线 | 发布/订阅简单实现；后续可替换外部 MQ。   |
+| **logging.py**    | 日志   | `structlog` 配置，输出 JSON。 |
+
+### 5. **tests/** — 测试
+
+| 文件                            | 角色    | 主要职责                                            |
+| ----------------------------- | ----- | ----------------------------------------------- |
+| **conftest.py**               | 共用夹具  | 提供 Memory Repo & SQLite Repo fixture；参数化选择存储后端。 |
+| **test\_recipe\_service.py**  | 单元测试  | 覆盖菜谱增删改查逻辑。                                     |
+| **test\_cook\_service.py**    | 单元+集成 | 覆盖烹饪流程、库存扣减、事件发布。                               |
+| **test\_planner\_service.py** | 单元测试  | 覆盖菜单筛选与购物清单生成。                                  |
 
 ---
 
-## 🌟　关键技术决策清单
+## 🗂 里程碑对应文件
 
-| 维度          | 建议                                                    | 备注             |
-| ----------- | ----------------------------------------------------- | -------------- |
-| **代码组织**    | Flat-layout → 最终切换到 src-layout（更易隔离第三方脚本）             | 动态导入时相对路径更安全   |
-| **类型系统**    | Python 3.12 + `mypy --strict`                         | 报错即红灯          |
-| **配置管理**    | Pydantic Settings 或 `dynaconf`，三层：默认 / `.env` / 环境变量  | 先别引入复杂配置中心     |
-| **日志 & 监控** | `structlog` JSON 输出；Prometheus fastapi-instrumentator | 生产可直接接 Grafana |
-| **测试覆盖率**   | 必须 ≥ 90 % （逻辑核心层），适配器适量                               | 质量门禁：<90 拒绝合并  |
-| **版本控制**    | `prefix-semver` 标签（例如 `core/v0.1.0`）                  | 领域层与适配器可分拆 tag |
+| 里程碑                  | 需完成文件                                                                    | 备注             |
+| -------------------- | ------------------------------------------------------------------------ | -------------- |
+| **M1 Domain+Memory** | `domain/**`, `adapters/repo_memory/**`, `app/services/**`, `tests/*`     | 单元测试绿灯         |
+| **M2 SQLite+CLI**    | `adapters/repo_sqlite/**`, `adapters/cli/main.py`, `app/unit_of_work.py` | 集成测试、手动 CLI 体验 |
 
 ---
 
-## 🏃‍♂️　下一步可执行 Todo（首两周冲刺）
-
-1. **拆解 MVP**：开 discussion / Issue 把必需功能列表写下来
-2. **搭通 CI**：`ruff + pytest + mypy` in GitHub Actions
-3. **编写 Domain skeleton**：`domain/recipe/__init__.py` 放 dataclass 雏形
-4. **实现 Memory Repo**：接口 + 最小存储字典
-5. **写 3–5 个精简单元测试**：覆盖增删改查与库存扣减
-6. **Push & 合并**：Merge 回 `main`，CI 绿灯
-
-做到这一步，REPL 里即可体验核心闭环，信心满满再进 SQLite/CLI 迭代。
+> 📝 *只实现你点名的文件，其他保持占位* —— 以最小增量确保 Commit 清晰。
+下面给出 **MVP 阶段的编码顺序清单**（共 11 步），每一步说明“为什么先写”与“完成标志”。
+按此路线可先在 **Memory-Repo** 环境跑通全部逻辑，再接入 SQLite 与 CLI，确保迭代粒度小、可随时回滚。
 
 ---
 
-### ⚒️　一些踩坑经验
+## 一览（只列文件，不写代码）
 
-| 场景         | 小贴士                                                    |
-| ---------- | ------------------------------------------------------ |
-| SQLite 并发写 | FastAPI + SQLite 用事务 & 单线程连接池；否则 “database is locked”。 |
-| 食材单位换算     | “500 g” 与 “0.5 kg” 建议存放 **归一化值** + 单位枚举，展示时再格式化。       |
-| 保质期提醒      | 不要单纯比较日期；开封后 & 冷冻/常温的 shelf-life 差异要建配置表。              |
-| 条形码库       | 大陆 & 国际条码段不同，建议聚合多个 API 并做缓存。                          |
+| #      | 需要完成的文件(夹)                                                         | 目标 & 理由                                                                                                                      | 完成标志                                                       |
+| ------ | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| **1**  | `domain/shared/value_objects.py` `events.py`                       | 先定 **不可变值对象** 和 **领域事件基类**，给后续模型统一依赖点。DDD 推荐从稳定、无依赖的核心开始 ([learn.microsoft.com][1], [docs.appflowy.io][2])                   | `Quantity`, `Unit`, `RecipeId` 等类具备等值比较；`DomainEvent` 带时间戳 |
+| **2**  | `domain/ingredient/models.py`                                      | Ingredient 聚合根依赖 Value Object，不依赖其他聚合，可最早落地 ([medium.com][3])                                                                | 含 `unit` 转换方法                                              |
+| **3**  | `domain/recipe/models.py`                                          | Recipe 聚合根需要引用 Ingredient Id 与数量，是后续用例核心 ([medium.com][3])                                                                   | 校验食材列表非空、不重复                                               |
+| **4**  | `domain/inventory/models.py`                                       | InventoryItem 与配套过期逻辑；Cook 流程必需 ([reddit.com][4])                                                                            | `consume(qty)` & `is_expired()` 通过测试                       |
+| **5**  | `domain/**/repository.py` (三个)                                     | 定义 **Port** (抽象接口) 供服务依赖；Hexagonal 要先明确 Port 再写 Adapter ([stackoverflow.com][5], [softwareengineering.stackexchange.com][6]) | `add/get/list` 方法签字冻结                                      |
+| **6**  | `adapters/repo_memory/*`                                           | In-Memory Repo 让单元测试独立于 DB；TDD/DDD 推荐先写内存实现再落地基础设施 ([softwareengineering.stackexchange.com][7], [stackoverflow.com][8])      | pytest 读取 / 写入全部通过                                         |
+| **7**  | `app/unit_of_work.py`                                              | 聚合 Memory Repo，以事务边界封装；Repository + UoW 是经典组合 ([dev.to][9], [softwareengineering.stackexchange.com][6])                      | `with UnitOfWork()` 上下文自动 commit/rollback                  |
+| **8**  | `app/services/*.py`                                                | Application Service 调度逻辑，依赖 Port + UoW，不触 I/O；业务价值最大，优先落地单元测试 ([medium.com][10])                                             | `cook_service` 能扣减库存并产出缺料列表                                |
+| **9**  | `tests/*`                                                          | 为 #1 – #8 写红→绿测试；TDD 保证设计收敛 ([medium.com][11], [reddit.com][12])                                                             | `pytest -q` 绿灯                                             |
+| **10** | `adapters/repo_sqlite/db.py` <br> `adapters/repo_sqlite/*_repo.py` | 基于 SQLAlchemy 2.0 映射实体；把已验证的领域逻辑持久化 ([reddit.com][4])                                                                        | Memory & SQLite 后端用同一测试套件均通过                               |
+| **11** | `adapters/cli/main.py`                                             | Typer CLI 封装 Service；至此完成 “CLI + SQLite MVP” ([medium.com][3])                                                               | 终端可 `cookmate cook \"番茄炒蛋\"`                               |
+
+> **注释约定**
+>
+> * 顶部模块级 docstring：一句话概述 + 栗子用法
+> * 关键决策点行内 `# WHY: …` 阐释动机
+> * 公共类型 & 协议在 `:returns:` / `:raises:` 中写明
 
 ---
 
-## 💬 最后
+### 推荐迭代节奏
 
-这套切分确保你 **先有跑得动的核心逻辑**，再逐层加壳，易于测试与重构；同时留好了微服务 / 云同步的成长空间。按这样推进，**≈ 4 – 6 周** 就能发布 CLI + SQLite 的可用版本；再用 2 – 3 月打磨 API、前端和智能筛选，就能对外小规模试用。祝编码愉快，随时回来交流进展！
+1. **步骤 1 – 4**：一天内搞定 Value Object 与三聚合；边写边跑 `pytest --maxfail=1 -q`。
+2. **步骤 5 – 9**：第二天集中写 Memory Repo→Service→Test，确保 Cook 流程闭环。
+3. **步骤 10 – 11**：第三天落 SQLite & CLI，完成 MVP CLI 体验。
+
+如需调整顺序或拆更小任务，随时告诉我！
+
+[1]: https://learn.microsoft.com/en-us/archive/msdn-magazine/2009/february/best-practice-an-introduction-to-domain-driven-design?utm_source=chatgpt.com "Best Practice - An Introduction To Domain-Driven Design"
+[2]: https://docs.appflowy.io/docs/documentation/software-contributions/architecture/domain-driven-design?utm_source=chatgpt.com "Domain Driven Design - AppFlowy Docs"
+[3]: https://medium.com/%40mail2mhossain/domain-driven-design-demystified-strategic-tactical-and-implementation-layers-dad829be18f0?utm_source=chatgpt.com "Domain-Driven Design Demystified: Strategic, Tactical, and ..."
+[4]: https://www.reddit.com/r/softwarearchitecture/comments/1brqh4t/a_very_simple_question_about_hexagonalclear/?utm_source=chatgpt.com "A very simple question about Hexagonal/Clear architecture - Reddit"
+[5]: https://stackoverflow.com/questions/39765870/hexagonal-architecture-with-repository?utm_source=chatgpt.com "Hexagonal architecture with repository - Stack Overflow"
+[6]: https://softwareengineering.stackexchange.com/questions/405699/is-the-repository-pattern-a-part-of-the-ports-and-adapters-concept?utm_source=chatgpt.com "Is the Repository pattern a part of the Ports and Adapters concept"
+[7]: https://softwareengineering.stackexchange.com/questions/319759/how-to-combine-strict-tdd-and-ddd?utm_source=chatgpt.com "How to combine strict TDD and DDD?"
+[8]: https://stackoverflow.com/questions/854142/tdd-and-ddd-while-still-understanding-the-domain?utm_source=chatgpt.com "TDD and DDD while still understanding the domain - Stack Overflow"
+[9]: https://dev.to/ruben_alapont/repository-and-unit-of-work-in-domain-driven-design-531e?utm_source=chatgpt.com "Repository and Unit of Work in Domain-Driven Design"
+[10]: https://medium.com/jamf-engineering/hexagonal-architecture-in-software-development-acb08c458f6a?utm_source=chatgpt.com "Hexagonal Architecture in Software Development | Jamf Engineering"
+[11]: https://medium.com/%40joatmon08/test-driven-development-techniques-for-infrastructure-a73bd1ab273b?utm_source=chatgpt.com "Test-Driven Development for Infrastructure | by Rosemary Wang"
+[12]: https://www.reddit.com/r/SoftwareEngineering/comments/1j7tcfy/tdd_on_trial_does_testdriven_development_really/?utm_source=chatgpt.com "TDD on Trial: Does Test-Driven Development Really Work? - Reddit"
