@@ -73,7 +73,7 @@ cookmate/
 | 3 | `web/api/routers/inventory.py` | 库存管理 API | ✅ |
 | 4 | `web/api/routers/planner.py` | 智能筛选 & 购物清单 | ✅ |
 | 5 | `tests/test_api_endpoints.py` | 覆盖所有路由 | ✅ |
-| 6 | `web/frontend/` | 简易前端 Demo | ⬜ |
+| 6 | `web/frontend/` | 简易前端 Demo | ✅ |
 | 7 | 文档与部署脚本 | 发布准备 | ⬜ |
 
 > **下一步优先级**：启动 v0.2 开发，搭建 FastAPI 服务与前端 Demo。
@@ -87,7 +87,7 @@ cookmate/
 | **M1 Domain+Memory** | `domain/**`, `adapters/repo_memory/**`, `app/services/**`, `tests/test_recipe_service.py`, `app/unit_of_work.py` | ✅ 完成 |
 | **M2 SQLite+CLI** | `adapters/repo_sqlite/**`, `infra/**`, `tests/test_cook_service.py`, `tests/test_planner_service.py`, `adapters/cli/main.py` | ✅ 完成 |
 | **M3 API 基础** | `web/api/**`, `tests/test_api_endpoints.py` | ✅ 完成 |
-| **M4 前端 Demo** | `web/frontend/**` | ⬜ |
+| **M4 前端 Demo** | `web/frontend/**` | ✅ |
 
 ---
 

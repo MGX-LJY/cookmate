@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <title>Cookmate</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; }
+        header { background: #333; color: #fff; padding: 10px 20px; display:flex; align-items:center; }
+        header h1 { margin: 0; font-size: 20px; }
+        nav { margin-left: 20px; }
+        nav a { color: #fff; margin-right: 15px; text-decoration: none; }
+        section { padding: 20px; display: none; }
+        section.active { display: block; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Cookmate</h1>
+        <nav>
+            <a href="#recipes">菜谱</a>
+            <a href="#inventory">库存</a>
+            <a href="#planner">计划</a>
+        </nav>
+    </header>
+    <section id="recipes" class="active">
+        <h2>菜谱</h2>
+        <button id="load-recipes">加载菜谱</button>
+        <ul id="recipes-list"></ul>
+    </section>
+    <section id="inventory">
+        <h2>库存</h2>
+        <button id="load-inv">加载库存</button>
+        <ul id="inv-list"></ul>
+    </section>
+    <section id="planner">
+        <h2>智能筛选</h2>
+        <button id="check-cookable">可做菜</button>
+        <ul id="cookable-list"></ul>
+    </section>
+    <script>
+    document.querySelectorAll('nav a').forEach(a => {
+        a.addEventListener('click', e => {
+            e.preventDefault();
+            document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+            const id = a.getAttribute('href').substring(1);
+            document.getElementById(id).classList.add('active');
+        });
+    });
+    document.getElementById('load-recipes').addEventListener('click', async () => {
+        const resp = await fetch('/recipes/');
+        const data = await resp.json();
+        document.getElementById('recipes-list').innerHTML = data.map(r => `<li>${r}</li>`).join('');
+    });
+    document.getElementById('load-inv').addEventListener('click', async () => {
+        const resp = await fetch('/inventory/');
+        const data = await resp.json();
+        document.getElementById('inv-list').innerHTML = data.map(i => `<li>${i.ingredient}: ${i.amount} ${i.unit}</li>`).join('');
+    });
+    document.getElementById('check-cookable').addEventListener('click', async () => {
+        const resp = await fetch('/planner/cookable');
+        const data = await resp.json();
+        document.getElementById('cookable-list').innerHTML = data.map(r => `<li>${r}</li>`).join('');
+    });
+    </script>
+</body>
+</html>
