@@ -43,7 +43,7 @@ cookmate/
 │       └── main.py                  ⬜
 ├── infra/
 │   ├── event_bus.py                 ✅
-│   └── logging.py                   ⬜
+│   └── logging.py                   ✅
 └── tests/
     ├── test_recipe_service.py       ✅
     ├── test_cook_service.py         ✅
