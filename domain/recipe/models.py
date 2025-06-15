@@ -20,6 +20,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import Mapping, Sequence
 
 from domain.shared.value_objects import (
@@ -36,6 +37,37 @@ from domain.shared.value_objects import (
 # MVP 仅需简单标签；后续可扩展字段（spicy_level, cuisine 等）
 MetaData = Mapping[str, str]
 IngredientMap = Mapping[IngredientId, Quantity]
+
+###############################################################################
+# Metadata Enums
+###############################################################################
+
+class Category(str, Enum):  # noqa: WPS110
+    """菜谱大类枚举."""
+
+    MAIN_STAPLE = "主食"
+    MAIN_DISH = "主菜"
+    SIDE_DISH = "副菜"
+
+
+class CookMethod(str, Enum):  # noqa: WPS110
+    """烹饪方式枚举."""
+
+    PAN = "煎"
+    STIR_FRY = "炒"
+    BOIL = "煮"
+    DEEP_FRY = "炸"
+    STEAM = "蒸"
+
+
+class Difficulty(str, Enum):  # noqa: WPS110
+    """难度等级枚举."""
+
+    LOW = "低"
+    MEDIUM = "中"
+    HIGH = "高"
+    MEDIUM_LOW = "中低"
+    MEDIUM_HIGH = "中高"
 
 ###############################################################################
 # Recipe 聚合根
