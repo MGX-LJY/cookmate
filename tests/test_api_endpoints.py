@@ -54,9 +54,32 @@ def test_recipe_endpoints(client):
         "name": "番茄炒蛋",
         "ingredients": {"鸡蛋": [2, ""], "西红柿": [300, "g"]},
         "steps": ["打蛋", "热锅"],
+        "category": "主菜",
+        "method": "炒",
+        "difficulty": "中",
+        "pairing": "米饭",
+        "time_minutes": "10-15min",
+        "notes": "小火慢炒",
+        "tutorial": "http://example.com",
     }
     resp = client.post("/recipes/", json=data)
     assert resp.status_code == 201
+
+    resp = client.patch("/recipes/番茄炒蛋/difficulty", json={"value": "中高"})
+    assert resp.status_code == 200
+
+    resp = client.get("/recipes/番茄炒蛋")
+    assert resp.status_code == 200
+    assert resp.json()["metadata"]["difficulty"] == "中高"
+
+    resp = client.patch("/recipes/番茄炒蛋/notes", json={"value": "加点糖"})
+    assert resp.status_code == 200
+
+    resp = client.patch(
+        "/recipes/番茄炒蛋/ingredients",
+        json={"ingredients": {"鸡蛋": [3, ""], "西红柿": [400, "g"]}},
+    )
+    assert resp.status_code == 200
 
     resp = client.get("/recipes/")
     assert resp.status_code == 200
