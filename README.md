@@ -79,6 +79,17 @@ $ ./scripts/dev.sh
 
 前端页面现在内置新增 / 删除菜谱、库存的表单，并可直接生成购物清单，方便体验。
 
+### Rust API Demo
+
+仓库额外提供基于 **Actix-Web** 的 Rust 后端示例。
+
+```bash
+$ cd rust-api
+$ cargo run
+```
+
+默认监听 `127.0.0.1:8080`，可访问 `/ping` 验证。
+
 ### CLI 体验
 
 ```bash
