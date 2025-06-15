@@ -1,6 +1,6 @@
 # Development Guide (v0.3)
 
-> **目标**：在 v0.2 基础上进一步完善前端界面布局，并为 PlannerService 的高级功能预留接口。
+> **目标**：整理所有 API 接口，并全面开发菜谱、库存、筛选页面的功能与 UI。
 
 > **状态标识** | ✅ 完成并通过测试 | ⬜ 尚未实现 / 未通过
 
@@ -24,11 +24,11 @@ cookmate/
 
 | # | 文件/目录 | 说明 | 完成标志 |
 |---|-----------|------|---------|
-| 1 | `web/frontend/static/index.html` | 优雅导航栏+示例菜谱表格 | ✅ |
-| 2 | `web/frontend/main.py` | 暴露静态资源，更新版本号 | ✅ |
-| 3 | `web/api/routers/recipe.py` | 新增删除接口 | ✅ |
-| 4 | `README.md` | 更新路线图与示例菜谱 | ✅ |
-| 5 | `pyproject.toml` | 升级版本到 0.3.1 | ✅ |
+| 1 | `web/frontend/static/index.html` | 新增菜谱/库存表单及购物清单展示 | ⬜ |
+| 2 | `web/frontend/main.py` | 暴露静态资源，更新版本号 | ⬜ |
+| 3 | `web/api/routers/*.py` | 梳理并统一接口 | ⬜ |
+| 4 | `README.md` | 更新路线图与快速开始说明 | ⬜ |
+| 5 | `API.md` | 列出所有可用接口 | ⬜ |
 
 > **下一步优先级**：在 v0.4 中为 UI 增加动画效果与过渡。
 
