@@ -121,3 +121,56 @@ class RecipeService:  # noqa: WPS110
             if not recipe:
                 raise RecipeNotFoundError(name)
             uow.recipes.remove(recipe.id)
+
+    # ------------------------------------------------------------------
+    # 新增：按菜名获取菜谱及单字段更新
+    # ------------------------------------------------------------------
+
+    def get_by_name(self, name: str) -> Recipe:
+        """获取指定菜谱。"""
+        with self.uow as uow:
+            recipe = uow.recipes.find_by_name(name)
+            if not recipe:
+                raise RecipeNotFoundError(name)
+            return recipe
+
+    def update_metadata_field(self, name: str, key: str, value: str) -> None:
+        """更新 metadata 中的单个字段。"""
+        with self.uow as uow:
+            recipe = uow.recipes.find_by_name(name)
+            if not recipe:
+                raise RecipeNotFoundError(name)
+            meta = dict(recipe.metadata or {})
+            meta[key] = str(value)
+            updated = Recipe(
+                name=recipe.name,
+                ingredients=recipe.ingredients,
+                steps=recipe.steps,
+                metadata=meta,
+                id=recipe.id,
+            )
+            uow.recipes.update(updated)
+
+    def update_ingredients(self, name: str, ingredient_inputs: IngredientInput) -> None:
+        """替换菜谱食材列表。"""
+        with self.uow as uow:
+            recipe = uow.recipes.find_by_name(name)
+            if not recipe:
+                raise RecipeNotFoundError(name)
+
+            ingredients_map = {}
+            for ing_name, (amount, unit_str) in ingredient_inputs.items():
+                ing = uow.ingredients.find_by_name(ing_name)
+                if not ing:
+                    raise ValueError(f"食材 '{ing_name}' 不存在，请先录入食材")
+                qty = Quantity.of(amount, unit=ing.default_unit if unit_str == "" else unit_str)  # type: ignore[arg-type]
+                ingredients_map[ing.id] = qty
+
+            updated = Recipe(
+                name=recipe.name,
+                ingredients=ingredients_map,
+                steps=recipe.steps,
+                metadata=recipe.metadata,
+                id=recipe.id,
+            )
+            uow.recipes.update(updated)
