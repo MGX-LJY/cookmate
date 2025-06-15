@@ -56,6 +56,16 @@ $ pip install -e .[dev]
 
 # 4. 运行单元测试
 $ PYTHONPATH=$PWD pytest -q
+
+# 5. 初始化 SQLite 数据库（首次运行）
+$ python scripts/init_db.py
+```
+
+导出或导入菜谱为 CSV：
+
+```bash
+$ python scripts/recipes_csv.py export recipes.csv
+$ python scripts/recipes_csv.py import recipes.csv
 ```
 
 ### 运行 API & 前端
@@ -67,7 +77,7 @@ $ ./scripts/dev.sh
 脚本会自动切换到仓库根目录并分别在 `8000`（API）与 `8001`（前端）端口启动服务，
 按 `Ctrl+C` 退出。
 
-前端页面提供更优雅的导航栏，并支持删除菜谱和库存项。页面底部展示了一份示例菜谱表格供参考。
+前端页面现在内置新增 / 删除菜谱、库存的表单，并可直接生成购物清单，方便体验。
 
 ### CLI 体验
 
@@ -144,7 +154,7 @@ sequenceDiagram
 | -------- | ------------------------ | ------ |
 | **v0.1** | MVP 五大功能 (CLI + SQLite) | ✅ 完成 |
 | **v0.2** | FastAPI + 前端 Demo | ✅ 完成 |
-| **v0.3** | 优化前端 UI 和 PlannerService（智能筛选 & 购物清单优化） | ✅ 完成 |
+| **v0.3** | 整理 API 并完善菜谱/库存/筛选页面功能 | ⏳ 进行中 |
 | **v0.4** | 优化前端 UI 动画 | ⏳ 规划 |
 | **v0.5** | 完善全部功能 | ⏳ 规划 |
 | **v0.6** | Docker 部署 | ⏳ 规划 |

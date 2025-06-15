@@ -15,6 +15,10 @@
         section.active { display:block; }
         table { border-collapse:collapse; width:100%; margin-top:20px; }
         th, td { border:1px solid #ccc; padding:4px 8px; }
+        .cards { display:flex; flex-wrap:wrap; }
+        .card { border:1px solid #ccc; border-radius:4px; margin:10px; width:180px; overflow:hidden; }
+        .card img { width:100%; height:120px; object-fit:cover; }
+        .card h4 { margin:0; padding:5px; font-size:16px; }
     </style>
 </head>
 <body>
@@ -30,18 +34,33 @@
     </header>
     <section id="recipes" class="active">
         <h2>菜谱</h2>
+        <form id="recipe-form">
+            <input id="recipe-name" placeholder="名称" required />
+            <textarea id="recipe-ingredients" placeholder='{"鸡蛋": [2, "" ]}'></textarea>
+            <textarea id="recipe-steps" placeholder="步骤，每行一个"></textarea>
+            <input id="recipe-cover" placeholder="封面 URL" />
+            <button type="submit">新增</button>
+        </form>
         <button id="load-recipes">加载菜谱</button>
         <ul id="recipes-list"></ul>
     </section>
     <section id="inventory">
         <h2>库存</h2>
+        <form id="inv-form">
+            <input id="inv-name" placeholder="食材" required />
+            <input id="inv-amt" type="number" placeholder="数量" required />
+            <input id="inv-unit" placeholder="单位" required />
+            <button type="submit">添加/更新</button>
+        </form>
         <button id="load-inv">加载库存</button>
         <ul id="inv-list"></ul>
     </section>
     <section id="planner">
         <h2>智能筛选</h2>
         <button id="check-cookable">可做菜</button>
+        <button id="shopping">购物清单</button>
         <ul id="cookable-list"></ul>
+        <ul id="shopping-list"></ul>
     </section>
 
     <script>
@@ -55,10 +74,33 @@
             document.getElementById(id).classList.add('active');
         });
     });
+    document.getElementById('recipe-form').addEventListener('submit', async e => {
+        e.preventDefault();
+        const name = document.getElementById('recipe-name').value;
+        const ingredients = document.getElementById('recipe-ingredients').value;
+        const steps = document.getElementById('recipe-steps').value.split('\n');
+        const cover = document.getElementById('recipe-cover').value;
+        await fetch('/recipes/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name, ingredients: JSON.parse(ingredients || '{}'), steps, cover})
+        });
+        document.getElementById('load-recipes').click();
+    });
     document.getElementById('load-recipes').addEventListener('click', async () => {
-        const resp = await fetch('/recipes/');
-        const data = await resp.json();
-        document.getElementById('recipes-list').innerHTML = data.map(r => `<li>${r} <button data-r="${r}">删除</button></li>`).join('');
+        const names = await (await fetch('/recipes/')).json();
+        const byCat = {};
+        for (const n of names) {
+            const d = await (await fetch(`/recipes/${n}`)).json();
+            const cat = d.metadata.category || '其他';
+            byCat[cat] = byCat[cat] || [];
+            byCat[cat].push(d);
+        }
+        const html = Object.entries(byCat).map(([cat, list]) => {
+            const cards = list.map(r => `<div class="card"><img src="${r.metadata.cover || ''}" alt=""><h4>${r.name}</h4><button data-r="${r.name}">删除</button></div>`).join('');
+            return `<h3>${cat}</h3><div class="cards">${cards}</div>`;
+        }).join('');
+        document.getElementById('recipes-list').innerHTML = html;
     });
     document.getElementById('recipes-list').addEventListener('click', async (e) => {
         if (e.target.tagName === 'BUTTON') {
@@ -66,6 +108,18 @@
             const resp = await fetch(`/recipes/${name}`, {method: 'DELETE'});
             if (resp.status === 204) e.target.parentElement.remove();
         }
+    });
+    document.getElementById('inv-form').addEventListener('submit', async e => {
+        e.preventDefault();
+        const ingredient = document.getElementById('inv-name').value;
+        const amount = document.getElementById('inv-amt').value;
+        const unit = document.getElementById('inv-unit').value;
+        await fetch('/inventory/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ingredient, amount, unit})
+        });
+        document.getElementById('load-inv').click();
     });
     document.getElementById('load-inv').addEventListener('click', async () => {
         const resp = await fetch('/inventory/');
@@ -83,6 +137,11 @@
         const resp = await fetch('/planner/cookable');
         const data = await resp.json();
         document.getElementById('cookable-list').innerHTML = data.map(r => `<li>${r}</li>`).join('');
+    });
+    document.getElementById('shopping').addEventListener('click', async () => {
+        const resp = await fetch('/planner/shopping', {method: 'POST', body: '{}', headers:{'Content-Type':'application/json'}});
+        const data = await resp.json();
+        document.getElementById('shopping-list').innerHTML = data.map(i => `<li>${i.ingredient}: ${i.amount} ${i.unit}</li>`).join('');
     });
     </script>
 </body>
