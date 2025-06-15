@@ -24,11 +24,11 @@ cookmate/
 
 | # | 文件/目录 | 说明 | 完成标志 |
 |---|-----------|------|---------|
-| 1 | `web/frontend/static/index.html` | 新增菜谱/库存表单及购物清单展示 | ⬜ |
-| 2 | `web/frontend/main.py` | 暴露静态资源，更新版本号 | ⬜ |
-| 3 | `web/api/routers/*.py` | 梳理并统一接口 | ⬜ |
-| 4 | `README.md` | 更新路线图与快速开始说明 | ⬜ |
-| 5 | `API.md` | 列出所有可用接口 | ⬜ |
+| 1 | `web/frontend/static/index.html` | 新增菜谱/库存表单及购物清单展示 | ✅ |
+| 2 | `web/frontend/main.py` | 暴露静态资源，更新版本号 | ✅ |
+| 3 | `web/api/routers/*.py` | 梳理并统一接口 | ✅ |
+| 4 | `README.md` | 更新路线图与快速开始说明 | ✅ |
+| 5 | `API.md` | 列出所有可用接口 | ✅ |
 
 > **下一步优先级**：在 v0.4 中为 UI 增加动画效果与过渡。
 

@@ -16,7 +16,7 @@ from app.services.recipe_service import (
     RecipeNotFoundError,
     RecipeService,
 )
-from domain.recipe.models import Recipe
+from domain.recipe.models import Recipe, Category, CookMethod, Difficulty
 from app.unit_of_work import AbstractUnitOfWork
 from web.api.deps import get_uow
 
@@ -30,11 +30,12 @@ if APIRouter is not None:  # pragma: no cover - skip when FastAPI unavailable
         name: str
         ingredients: dict[str, tuple[float | int | str, str]]
         steps: list[str] | None = None
-        category: str | None = None
-        method: str | None = None
-        difficulty: str | None = None
+        category: Category | None = None
+        method: CookMethod | None = None
+        difficulty: Difficulty | None = None
         pairing: str | None = None
-        time_minutes: int | None = None
+        time_minutes: str | None = None
+        notes: str | None = None
         tutorial: str | None = None
 
     class MetaField(BaseModel):  # noqa: D401
@@ -96,6 +97,7 @@ if APIRouter is not None:  # pragma: no cover - skip when FastAPI unavailable
                         "difficulty": data.difficulty,
                         "pairing": data.pairing,
                         "time_minutes": data.time_minutes,
+                        "notes": data.notes,
                         "tutorial": data.tutorial,
                     }.items()
                     if v is not None
@@ -156,6 +158,11 @@ if APIRouter is not None:  # pragma: no cover - skip when FastAPI unavailable
     @router.patch("/{name}/time_minutes")
     def set_time(name: str, data: MetaField, uow: AbstractUnitOfWork = Depends(get_uow)) -> dict[str, str]:
         _update(name, "time_minutes", data.value, uow)
+        return {"msg": "ok"}
+
+    @router.patch("/{name}/notes")
+    def set_notes(name: str, data: MetaField, uow: AbstractUnitOfWork = Depends(get_uow)) -> dict[str, str]:
+        _update(name, "notes", data.value, uow)
         return {"msg": "ok"}
 
     @router.patch("/{name}/tutorial")

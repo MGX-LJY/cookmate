@@ -9,6 +9,10 @@
 | GET | `/ping` | 健康检查 | `web/api/main.py` |
 
 ## 菜谱 (`web/api/routers/recipe.py`)
+参数约束：
+- 大类 `category`：主食 / 主菜 / 副菜
+- 烹饪方法 `method`：煎 / 炒 / 煮 / 炸 / 蒸
+- 难度 `difficulty`：低 / 中 / 高 / 中低 / 中高
 
 | 方法 | 路径 | 说明 |
 | --- | --- | --- |
@@ -20,6 +24,7 @@
 | PATCH | `/recipes/{name}/method` | 更新烹饪方法，body: `{"value": str}` |
 | PATCH | `/recipes/{name}/pairing` | 更新搭配建议，body: `{"value": str}` |
 | PATCH | `/recipes/{name}/time_minutes` | 更新制作时长，body: `{"value": str}` |
+| PATCH | `/recipes/{name}/notes` | 更新注意事项，body: `{"value": str}` |
 | PATCH | `/recipes/{name}/tutorial` | 更新教程链接，body: `{"value": str}` |
 | PATCH | `/recipes/{name}/ingredients` | 更新食材列表，body: `{"ingredients": {...}}` |
 | DELETE | `/recipes/{name}` | 删除指定名称的菜谱 |

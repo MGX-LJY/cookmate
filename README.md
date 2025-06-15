@@ -56,6 +56,9 @@ $ pip install -e .[dev]
 
 # 4. 运行单元测试
 $ PYTHONPATH=$PWD pytest -q
+
+# 5. 初始化 SQLite 数据库（首次运行）
+$ python scripts/init_db.py
 ```
 
 ### 运行 API & 前端

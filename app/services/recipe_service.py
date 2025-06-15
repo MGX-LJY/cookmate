@@ -23,7 +23,12 @@ from __future__ import annotations
 from typing import Mapping
 
 from app.unit_of_work import AbstractUnitOfWork
-from domain.recipe.models import Recipe
+from domain.recipe.models import (
+    Recipe,
+    Category,
+    CookMethod,
+    Difficulty,
+)
 from domain.shared.value_objects import Quantity, RecipeId
 
 ###############################################################################
@@ -92,11 +97,35 @@ class RecipeService:  # noqa: WPS110
                 qty = Quantity.of(amount, unit=ing.default_unit if unit_str == "" else unit_str)  # type: ignore[arg-type]
                 ingredients_map[ing.id] = qty
 
+            meta: dict[str, str] | None = None
+            if metadata is not None:
+                meta = {}
+                if cat := metadata.get("category"):
+                    if cat not in {c.value for c in Category}:
+                        raise ValueError("非法的大类")
+                    meta["category"] = cat
+                if method := metadata.get("method"):
+                    if method not in {m.value for m in CookMethod}:
+                        raise ValueError("非法的烹饪方法")
+                    meta["method"] = method
+                if diff := metadata.get("difficulty"):
+                    if diff not in {d.value for d in Difficulty}:
+                        raise ValueError("非法的难度")
+                    meta["difficulty"] = diff
+                for key in [
+                    "pairing",
+                    "time_minutes",
+                    "notes",
+                    "tutorial",
+                ]:
+                    if key in metadata:
+                        meta[key] = metadata[key]
+
             recipe = Recipe(
                 name=name,
                 ingredients=ingredients_map,
                 steps=steps or [],
-                metadata=metadata,
+                metadata=meta,
             )
             uow.recipes.add(recipe)
             # commit 在 UoW __exit__ 中调用
@@ -141,6 +170,12 @@ class RecipeService:  # noqa: WPS110
             if not recipe:
                 raise RecipeNotFoundError(name)
             meta = dict(recipe.metadata or {})
+            if key == "category" and value not in {c.value for c in Category}:
+                raise ValueError("非法的大类")
+            if key == "method" and value not in {m.value for m in CookMethod}:
+                raise ValueError("非法的烹饪方法")
+            if key == "difficulty" and value not in {d.value for d in Difficulty}:
+                raise ValueError("非法的难度")
             meta[key] = str(value)
             updated = Recipe(
                 name=recipe.name,
