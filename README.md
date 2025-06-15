@@ -61,6 +61,13 @@ $ PYTHONPATH=$PWD pytest -q
 $ python scripts/init_db.py
 ```
 
+导出或导入菜谱为 CSV：
+
+```bash
+$ python scripts/recipes_csv.py export recipes.csv
+$ python scripts/recipes_csv.py import recipes.csv
+```
+
 ### 运行 API & 前端
 
 ```bash

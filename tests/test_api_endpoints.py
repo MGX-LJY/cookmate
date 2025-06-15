@@ -61,6 +61,7 @@ def test_recipe_endpoints(client):
         "time_minutes": "10-15min",
         "notes": "小火慢炒",
         "tutorial": "http://example.com",
+        "cover": "http://img.example.com/egg.jpg",
     }
     resp = client.post("/recipes/", json=data)
     assert resp.status_code == 201
@@ -71,9 +72,16 @@ def test_recipe_endpoints(client):
     resp = client.get("/recipes/番茄炒蛋")
     assert resp.status_code == 200
     assert resp.json()["metadata"]["difficulty"] == "中高"
+    assert resp.json()["metadata"]["cover"] == "http://img.example.com/egg.jpg"
 
     resp = client.patch("/recipes/番茄炒蛋/notes", json={"value": "加点糖"})
     assert resp.status_code == 200
+
+    resp = client.patch("/recipes/番茄炒蛋/cover", json={"value": "http://img.example.com/new.jpg"})
+    assert resp.status_code == 200
+
+    resp = client.get("/recipes/番茄炒蛋")
+    assert resp.json()["metadata"]["cover"] == "http://img.example.com/new.jpg"
 
     resp = client.patch(
         "/recipes/番茄炒蛋/ingredients",

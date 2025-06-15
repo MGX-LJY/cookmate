@@ -117,6 +117,7 @@ class RecipeService:  # noqa: WPS110
                     "time_minutes",
                     "notes",
                     "tutorial",
+                    "cover",
                 ]:
                     if key in metadata:
                         meta[key] = metadata[key]

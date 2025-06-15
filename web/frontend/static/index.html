@@ -15,6 +15,10 @@
         section.active { display:block; }
         table { border-collapse:collapse; width:100%; margin-top:20px; }
         th, td { border:1px solid #ccc; padding:4px 8px; }
+        .cards { display:flex; flex-wrap:wrap; }
+        .card { border:1px solid #ccc; border-radius:4px; margin:10px; width:180px; overflow:hidden; }
+        .card img { width:100%; height:120px; object-fit:cover; }
+        .card h4 { margin:0; padding:5px; font-size:16px; }
     </style>
 </head>
 <body>
@@ -34,6 +38,7 @@
             <input id="recipe-name" placeholder="名称" required />
             <textarea id="recipe-ingredients" placeholder='{"鸡蛋": [2, "" ]}'></textarea>
             <textarea id="recipe-steps" placeholder="步骤，每行一个"></textarea>
+            <input id="recipe-cover" placeholder="封面 URL" />
             <button type="submit">新增</button>
         </form>
         <button id="load-recipes">加载菜谱</button>
@@ -74,17 +79,28 @@
         const name = document.getElementById('recipe-name').value;
         const ingredients = document.getElementById('recipe-ingredients').value;
         const steps = document.getElementById('recipe-steps').value.split('\n');
+        const cover = document.getElementById('recipe-cover').value;
         await fetch('/recipes/', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({name, ingredients: JSON.parse(ingredients || '{}'), steps})
+            body: JSON.stringify({name, ingredients: JSON.parse(ingredients || '{}'), steps, cover})
         });
         document.getElementById('load-recipes').click();
     });
     document.getElementById('load-recipes').addEventListener('click', async () => {
-        const resp = await fetch('/recipes/');
-        const data = await resp.json();
-        document.getElementById('recipes-list').innerHTML = data.map(r => `<li>${r} <button data-r="${r}">删除</button></li>`).join('');
+        const names = await (await fetch('/recipes/')).json();
+        const byCat = {};
+        for (const n of names) {
+            const d = await (await fetch(`/recipes/${n}`)).json();
+            const cat = d.metadata.category || '其他';
+            byCat[cat] = byCat[cat] || [];
+            byCat[cat].push(d);
+        }
+        const html = Object.entries(byCat).map(([cat, list]) => {
+            const cards = list.map(r => `<div class="card"><img src="${r.metadata.cover || ''}" alt=""><h4>${r.name}</h4><button data-r="${r.name}">删除</button></div>`).join('');
+            return `<h3>${cat}</h3><div class="cards">${cards}</div>`;
+        }).join('');
+        document.getElementById('recipes-list').innerHTML = html;
     });
     document.getElementById('recipes-list').addEventListener('click', async (e) => {
         if (e.target.tagName === 'BUTTON') {

@@ -37,6 +37,7 @@ if APIRouter is not None:  # pragma: no cover - skip when FastAPI unavailable
         time_minutes: str | None = None
         notes: str | None = None
         tutorial: str | None = None
+        cover: str | None = None
 
     class MetaField(BaseModel):  # noqa: D401
         """Single metadata value."""
@@ -99,6 +100,7 @@ if APIRouter is not None:  # pragma: no cover - skip when FastAPI unavailable
                         "time_minutes": data.time_minutes,
                         "notes": data.notes,
                         "tutorial": data.tutorial,
+                        "cover": data.cover,
                     }.items()
                     if v is not None
                 },
@@ -168,6 +170,11 @@ if APIRouter is not None:  # pragma: no cover - skip when FastAPI unavailable
     @router.patch("/{name}/tutorial")
     def set_tutorial(name: str, data: MetaField, uow: AbstractUnitOfWork = Depends(get_uow)) -> dict[str, str]:
         _update(name, "tutorial", data.value, uow)
+        return {"msg": "ok"}
+
+    @router.patch("/{name}/cover")
+    def set_cover(name: str, data: MetaField, uow: AbstractUnitOfWork = Depends(get_uow)) -> dict[str, str]:
+        _update(name, "cover", data.value, uow)
         return {"msg": "ok"}
 
     @router.patch("/{name}/ingredients")

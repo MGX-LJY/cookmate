@@ -18,7 +18,7 @@
 | --- | --- | --- |
 | GET | `/recipes/` | 获取所有菜谱名称 |
 | GET | `/recipes/{name}` | 查看菜谱详情 |
-| POST | `/recipes/` | 新建菜谱，body: `{"name": str, "ingredients": {...}, "steps": [...], "category": str, "method": str, ...}` |
+| POST | `/recipes/` | 新建菜谱，body: `{"name": str, "ingredients": {...}, "steps": [...], "category": str, "method": str, "cover": str, ...}` |
 | PATCH | `/recipes/{name}/difficulty` | 更新难度，body: `{"value": str}` |
 | PATCH | `/recipes/{name}/category` | 更新大类，body: `{"value": str}` |
 | PATCH | `/recipes/{name}/method` | 更新烹饪方法，body: `{"value": str}` |
@@ -26,6 +26,7 @@
 | PATCH | `/recipes/{name}/time_minutes` | 更新制作时长，body: `{"value": str}` |
 | PATCH | `/recipes/{name}/notes` | 更新注意事项，body: `{"value": str}` |
 | PATCH | `/recipes/{name}/tutorial` | 更新教程链接，body: `{"value": str}` |
+| PATCH | `/recipes/{name}/cover` | 更新封面地址，body: `{"value": str}` |
 | PATCH | `/recipes/{name}/ingredients` | 更新食材列表，body: `{"ingredients": {...}}` |
 | DELETE | `/recipes/{name}` | 删除指定名称的菜谱 |
 
